@@ -4,6 +4,7 @@ import round from "../Take Home Test (Front-End Dev)/Ellipse.png";
 import chev from "../Take Home Test (Front-End Dev)/Shape.png";
 import setting from "../Take Home Test (Front-End Dev)/Iconic/Filled/Medium.svg";
 import bell from "../Take Home Test (Front-End Dev)/Iconic/Filled/Medium-1.svg";
+import searchcomponent from "../Take Home Test (Front-End Dev)/Misc/search.svg";
 
 const NavBar = () => {
   return (
@@ -88,9 +89,22 @@ const NavBar = () => {
             display: "flex",
             justifyContent: "center",
             position: "absolute",
-            left: "91%",
+            left: "70%",
           }}
         >
+          <div className="searchbar">
+            <input placeholder="Search text" className="inputsearch" />
+            <img
+              src={searchcomponent}
+              alt=""
+              style={{
+                height: "23px",
+                width: "23px",
+                paddingLeft: "17px",
+                paddingTop: "7.5px",
+              }}
+            />
+          </div>
           <img
             src={bell}
             alt=""

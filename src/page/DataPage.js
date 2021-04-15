@@ -7,8 +7,11 @@ import graph2 from "../Take Home Test (Front-End Dev)/Iconic/Filled/basebig.png"
 import titik from "../Take Home Test (Front-End Dev)/Iconic/Filled/titik.png";
 import "react-date-range/dist/styles.css";
 import "react-date-range/dist/theme/default.css";
-import {DateRange, DateRangePicker} from "react-date-range";
-import {PieChart, Pie, Tooltip} from "recharts";
+import {DateRange} from "react-date-range";
+import ThirdChart from "../component/ThirdChart";
+import SecondChart from "../component/SecondChart";
+import FChart from "../component/FChart";
+import DateRangePicker from "@wojtekmaj/react-daterange-picker";
 
 const DataPage = () => {
   const dispatch = useDispatch();
@@ -16,466 +19,215 @@ const DataPage = () => {
   useEffect(() => {
     dispatch(fetchDataAction());
   }, [dispatch]);
-
   const {orders} = useSelector((state) => state.data.data);
 
-  const [revenue1, setRevenue1] = useState(0);
-  const [revenue2, setRevenue2] = useState(0);
-  const [revenue3, setRevenue3] = useState(0);
-  const [revenue4, setRevenue4] = useState(0);
+  //calendar filter
+  const [stateDate, setStateDate] = useState([
+    {
+      startDate: new Date(),
+      endDate: new Date(),
+      key: "selection",
+    },
+  ]);
+  const [filt, setFilt] = useState(false);
+  const handleFilter = () => {
+    console.log(stateDate[0].startDate.toString());
+    console.log(stateDate[0].endDate.toString());
+    setFilt(true);
+  };
 
+  const handleCancel = () => {
+    setFilt(false);
+    setStateDate([
+      {
+        startDate: new Date(),
+        endDate: new Date(),
+        key: "selection",
+      },
+    ]);
+  };
+
+  //set today's date
+  const [theDate, setTheDate] = useState();
   useEffect(() => {
-    {
-      let total1 = 0;
-      orders
-        ?.filter((val) => val.conversion_item === "Bonds")
-        .forEach((subVal) => (total1 += parseInt(subVal.conversion_revenue)));
-      setRevenue1(total1);
-    }
-    {
-      let total2 = 0;
-      orders
-        ?.filter((val) => val.conversion_item === "Mutualfund")
-        .forEach((subVal) => (total2 += parseInt(subVal.conversion_revenue)));
-      setRevenue2(total2);
-    }
-    {
-      let total3 = 0;
-      orders
-        ?.filter((val) => val.conversion_item === "Unit Link")
-        .forEach((subVal) => (total3 += parseInt(subVal.conversion_revenue)));
-      setRevenue3(total3);
-    }
-    {
-      let total4 = 0;
-      orders
-        ?.filter((val) => val.conversion_item === "Gold")
-        .forEach((subVal) => (total4 += parseInt(subVal.conversion_revenue)));
-      setRevenue4(total4);
-    }
-  }, [orders]);
+    let today = new Date();
+    let monthNow = "";
+    const month = today.getMonth() + 1;
+    if (month === 1) monthNow = "Januari";
+    if (month === 2) monthNow = "Februari";
+    if (month === 3) monthNow = "Maret";
+    if (month === 4) monthNow = "April";
+    if (month === 5) monthNow = "Mei";
+    if (month === 6) monthNow = "Juni";
+    if (month === 7) monthNow = "Juli";
+    if (month === 8) monthNow = "Agustus";
+    if (month === 9) monthNow = "September";
+    if (month === 10) monthNow = "Oktober";
+    if (month === 11) monthNow = "November";
+    if (month === 12) monthNow = "Desember";
 
+    const date = today.getDate() + " " + monthNow + " " + today.getFullYear();
+    setTheDate(date);
+  }, []);
+
+  //table for all order list
   const tableOrder = () => {
     return (
-      <div style={{width: "750px", paddingTop: "20px"}}>
+      <div className="tablediv">
         <div>
-          <div style={{display: "flex", flexDirection: "column"}}>
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "row",
-                alignItems: "center",
-                backgroundColor: "#F5F5F5",
-                height: "56px",
-              }}
-              className="tableheadborder"
-            >
-              <div
-                style={{
-                  width: "151px",
-                  display: "flex",
-                  paddingLeft: "10px",
-                }}
-                className="tableheadfont"
-              >
+          <div className="tablesubdiv">
+            <div className="tableheadborder">
+              <div className="tableheadfont">
                 Order
                 <br />
                 Number
               </div>
-              <div
-                style={{
-                  width: "151px",
-                  display: "flex",
-                  paddingLeft: "5px",
-                }}
-                className="tableheadfont"
-              >
-                Status
-              </div>
-              <div
-                style={{
-                  width: "151px",
-                  display: "flex",
-                  paddingLeft: "5px",
-                }}
-                className="tableheadfont"
-              >
-                Operator
-              </div>
-              <div
-                style={{
-                  width: "151px",
-                  display: "flex",
-                  paddingLeft: "5px",
-                }}
-                className="tableheadfont"
-              >
-                Location
-              </div>
-              <div
-                style={{
-                  width: "151px",
-                  display: "flex",
-                  paddingLeft: "5px",
-                }}
-                className="tableheadfont"
-              >
-                Start Date
-              </div>
-              <div
-                style={{
-                  width: "151px",
-                  display: "flex",
-                  paddingLeft: "5px",
-                }}
-                className="tableheadfont"
-              >
-                Due Date
-              </div>
+              <div className="tableheadfont">Status</div>
+              <div className="tableheadfont">Operator</div>
+              <div className="tableheadfont">Location</div>
+              <div className="tableheadfont">Start Date</div>
+              <div className="tableheadfont">Due Date</div>
             </div>
-
-            {orders
-              ? orders.map((val) => {
-                  return (
-                    <div
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        flexDirection: "row",
-                        height: "56px",
-                      }}
-                      className="tableborder"
-                    >
-                      <div
-                        style={{
-                          display: "flex",
-                          flexWrap: "wrap",
-                          wordBreak: "break-word",
-                          width: "150px",
-                          paddingLeft: "1px",
-                          paddingRight: "10px",
-                        }}
-                        className="tablebodyfont"
-                      >
-                        <div style={{paddingLeft: "5px"}}>
-                          #
-                          {val.order_id?.split("-")[1].toUpperCase() +
-                            "-" +
-                            val.order_id?.split("-")[2].toUpperCase()}
+            {filt ? (
+              <div>Click Cancel Button to get show All Data</div>
+            ) : (
+              <>
+                {orders
+                  ? orders.map((val) => {
+                      return (
+                        <div className="tableborder">
+                          <div
+                            style={{
+                              paddingLeft: "1px",
+                            }}
+                            className="tablebodyfont"
+                          >
+                            <div style={{paddingLeft: "5px"}}>
+                              #
+                              {val.order_id?.split("-")[1].toUpperCase() +
+                                "-" +
+                                val.order_id?.split("-")[2].toUpperCase()}
+                            </div>
+                          </div>
+                          <div
+                            style={{
+                              paddingLeft: "10px",
+                            }}
+                            className="tablebodyfont"
+                          >
+                            {val.status === "pending" ? (
+                              <div className="tableStatusSect">
+                                <div style={{paddingLeft: "21px"}}>
+                                  {val.status.charAt(0).toUpperCase() +
+                                    val.status.slice(1).toLowerCase()}
+                                </div>
+                              </div>
+                            ) : val.status === "completed" ? (
+                              <div className="tableStatusSecSect">
+                                <div style={{paddingLeft: "12px"}}>
+                                  {val.status.charAt(0).toUpperCase() +
+                                    val.status.slice(1).toLowerCase()}
+                                </div>
+                              </div>
+                            ) : (
+                              <div className="tableStatusThirdSect">
+                                <div style={{paddingLeft: "17px"}}>
+                                  {val.status.charAt(0).toUpperCase() +
+                                    val.status.slice(1).toLowerCase()}
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                          <div
+                            style={{
+                              paddingLeft: "10px",
+                            }}
+                            className="tablebodyfont"
+                          >
+                            {val.full_name}
+                          </div>
+                          <div
+                            style={{
+                              paddingLeft: "10px",
+                            }}
+                            className="tablebodyfont"
+                          >
+                            {val.location}
+                          </div>
+                          <div
+                            style={{
+                              paddingLeft: "10px",
+                            }}
+                            className="tablebodyfont"
+                          >
+                            {val.start_date}
+                          </div>
+                          <div
+                            style={{
+                              paddingLeft: "10px",
+                            }}
+                            className="tablebodyfont"
+                          >
+                            {val.due_date}
+                          </div>
                         </div>
-                      </div>
-                      <div
-                        style={{
-                          display: "flex",
-                          flexWrap: "wrap",
-                          wordBreak: "break-word",
-                          width: "150px",
-                          paddingLeft: "10px",
-                          paddingRight: "10px",
-                        }}
-                        className="tablebodyfont"
-                      >
-                        {val.status === "pending" ? (
-                          <div
-                            style={{
-                              height: "24px",
-                              width: "95.5px",
-                              backgroundColor: "#E69849",
-                              color: "#FFFFFF",
-                              paddingLeft: "10px",
-                              paddingTop: "6px",
-                              borderRadius: "4px",
-                            }}
-                          >
-                            <div style={{paddingLeft: "21px"}}>
-                              {val.status.charAt(0).toUpperCase() +
-                                val.status.slice(1).toLowerCase()}
-                            </div>
-                          </div>
-                        ) : val.status === "completed" ? (
-                          <div
-                            style={{
-                              height: "24px",
-                              width: "95.5px",
-                              backgroundColor: "#789764",
-                              color: "#FFFFFF",
-                              paddingLeft: "10px",
-                              paddingTop: "6px",
-                              borderRadius: "4px",
-                            }}
-                          >
-                            <div style={{paddingLeft: "12px"}}>
-                              {val.status.charAt(0).toUpperCase() +
-                                val.status.slice(1).toLowerCase()}
-                            </div>
-                          </div>
-                        ) : (
-                          <div
-                            style={{
-                              height: "24px",
-                              width: "95.5px",
-                              backgroundColor: "#D66D4B",
-                              color: "#FFFFFF",
-                              paddingLeft: "10px",
-                              paddingTop: "6px",
-                              borderRadius: "4px",
-                            }}
-                          >
-                            <div style={{paddingLeft: "17px"}}>
-                              {val.status.charAt(0).toUpperCase() +
-                                val.status.slice(1).toLowerCase()}
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                      <div
-                        style={{
-                          display: "flex",
-                          flexWrap: "wrap",
-                          wordBreak: "break-word",
-                          width: "150px",
-                          paddingLeft: "10px",
-                          paddingRight: "10px",
-                        }}
-                        className="tablebodyfont"
-                      >
-                        {val.full_name}
-                      </div>
-                      <div
-                        style={{
-                          display: "flex",
-                          flexWrap: "wrap",
-                          wordBreak: "break-word",
-                          width: "150px",
-                          paddingLeft: "10px",
-                          paddingRight: "10px",
-                        }}
-                        className="tablebodyfont"
-                      >
-                        {val.location}
-                      </div>
-                      <div
-                        style={{
-                          display: "flex",
-                          flexWrap: "wrap",
-                          wordBreak: "break-word",
-                          width: "150px",
-                          paddingLeft: "10px",
-                          paddingRight: "10px",
-                        }}
-                        className="tablebodyfont"
-                      >
-                        {val.start_date}
-                      </div>
-                      <div
-                        style={{
-                          display: "flex",
-                          flexWrap: "wrap",
-                          wordBreak: "break-word",
-                          width: "150px",
-                          paddingLeft: "10px",
-                          paddingRight: "10px",
-                        }}
-                        className="tablebodyfont"
-                      >
-                        {val.due_date}
-                      </div>
-                    </div>
-                  );
-                })
-              : null}
+                      );
+                    })
+                  : null}
+              </>
+            )}
           </div>
         </div>
       </div>
     );
   };
 
-  const myData = [
-    {name: "Bonds", value: revenue1, fill: "#5C8F94"},
-    {name: "Mutualfund", value: revenue2, fill: "#725E9C"},
-    {name: "Unit Link", value: revenue3, fill: "#E4EAEB"},
-    {name: "Gold", value: revenue4, fill: "#EBA45E"},
-  ];
+  //counting total Revenue
+  const totalRev = () => {
+    let total = 0;
+    orders
+      ?.filter((val) => val.status === "completed")
+      .forEach((val) => (total += parseInt(val.conversion_revenue)));
+    return total.toLocaleString();
+  };
 
-  const [stateDate, setStateDate] = useState([
-    {
-      startDate: new Date(),
-      endDate: null,
-      key: "selection",
-    },
-  ]);
+  //date range for revenue
+  const [value, onChange] = useState([new Date(), new Date()]);
   return (
     <div style={{paddingTop: "88px"}}>
       <div style={{display: "flex", flexDirection: "column"}}>
-        <div style={{height: "56px", backgroundColor: "#F5F5F5"}}>
-          <div
-            style={{
-              fontSize: "12px",
-              lineHeight: "16px",
-              textAlign: "right",
-              fontWeight: "600",
-              fontFamily: "Montserrat",
-              paddingTop: "20px",
-              paddingRight: "20px",
-            }}
-          >
-            8 April 2021
-          </div>
+        <div className="topDiv">
+          <div className="dateDiv">{theDate}</div>
         </div>
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "row",
-            paddingLeft: "15px",
-            paddingTop: "15px",
-          }}
-        >
-          <div
-            style={{
-              width: "300px",
-              height: "472px",
-              display: "flex",
-              flexDirection: "column",
-              position: "absolute",
-            }}
-          >
-            <img
-              src={graph}
-              alt=""
-              style={{
-                position: "absolute",
-                maxWidth: "300px",
-                maxHeight: "472px",
-              }}
-            />
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "row",
-              }}
-            >
-              <div
-                style={{
-                  fontFamily: "Montserrat",
-                  fontSize: "24px",
-                  fontWeight: "bold",
-                  color: "#333333",
-                  position: "absolute",
-                  paddingTop: "22px",
-                  paddingLeft: "20px",
-                }}
-              >
-                Conversion
-              </div>
-              <div
-                style={{
-                  paddingLeft: "240px",
-                  paddingTop: "22px",
-                  position: "absolute",
-                }}
-              >
-                <img src={base} alt="" style={{position: "absolute"}} />{" "}
-                <img src={titik} alt="" style={{paddingLeft: "10px"}} />{" "}
+        <div className="middleDiv">
+          <div className="midFirstDiv">
+            <img src={graph} alt="" className="midImg" />
+            <div className="midSubdiv">
+              <div className="midGraphTitle">Conversion</div>
+              <div className="midSmallBox">
+                <img src={base} alt="" className="midBase" />{" "}
+                <img src={titik} alt="" className="midBaseFill" />{" "}
               </div>
             </div>
-            <div
-              style={{
-                position: "absolute",
-                paddingTop: "70px",
-                paddingLeft: "27px",
-              }}
-            >
-              <PieChart width={250} height={250}>
-                <Pie
-                  dataKey="value"
-                  isAnimationActive={true}
-                  data={myData}
-                  outerRadius={70}
-                  label
-                />
-                <Tooltip />
-              </PieChart>
+            <div className="midFirstGraph">
+              <FChart />
             </div>
           </div>
-          <div
-            style={{
-              width: "300px",
-              height: "472px",
-              paddingLeft: "320px",
-              display: "flex",
-              flexDirection: "column",
-              position: "absolute",
-            }}
-          >
-            <img
-              src={graph}
-              alt=""
-              style={{
-                position: "absolute",
-                maxWidth: "300px",
-                maxHeight: "472px",
-              }}
-            />
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "row",
-                position: "absolute",
-              }}
-            >
-              <div
-                style={{
-                  fontFamily: "Montserrat",
-                  fontSize: "24px",
-                  fontWeight: "bold",
-                  color: "#333333",
-                  position: "absolute",
-                  paddingTop: "22px",
-                  paddingLeft: "20px",
-                }}
-              >
-                Users
-              </div>
-              <div
-                style={{
-                  paddingLeft: "240px",
-                  position: "absolute",
-                  paddingTop: "22px",
-                }}
-              >
-                <img src={base} alt="" style={{position: "absolute"}} />{" "}
-                <img src={titik} alt="" style={{paddingLeft: "10px"}} />{" "}
+          <div className="midSecDiv">
+            <img src={graph} alt="" className="midSecImg" />
+            <div className="midSubSecdiv">
+              <div className="midGraphTitle">Users</div>
+              <div className="midSmallBox">
+                <img src={base} alt="" className="midBase" />{" "}
+                <img src={titik} alt="" className="midBaseFill" />{" "}
               </div>
             </div>
-            <div
-              style={{
-                position: "absolute",
-                paddingTop: "70px",
-                paddingLeft: "20px",
-              }}
-            >
-              The graphs
+            <div className="midSecGraph">
+              <SecondChart />
             </div>
           </div>
-          <div
-            style={{
-              width: "328px",
-              height: "472px",
-              paddingLeft: "640px",
-              display: "flex",
-              flexDirection: "column",
-              position: "absolute",
-            }}
-          >
-            <img
-              src={graph2}
-              alt=""
-              style={{
-                position: "absolute",
-                maxWidth: "590px",
-                height: "432px",
-              }}
-            />
+          <div className="midThirdDiv">
+            <img src={graph2} alt="" className="midThirdImg" />
             <div
               style={{
                 display: "flex",
@@ -483,48 +235,21 @@ const DataPage = () => {
                 position: "absolute",
               }}
             >
-              <div
-                style={{
-                  fontFamily: "Montserrat",
-                  fontSize: "24px",
-                  fontWeight: "bold",
-                  color: "#333333",
-                  position: "absolute",
-                  paddingTop: "22px",
-                  paddingLeft: "20px",
-                }}
-              >
-                Revenue
+              <div className="midGraphTitle">Revenue</div>
+              <div className="calendarRange">
+                <DateRangePicker onChange={onChange} value={value} />
               </div>
             </div>
-            <div
-              style={{
-                position: "absolute",
-                paddingTop: "70px",
-                paddingLeft: "20px",
-              }}
-            >
-              The graphs
+            <div className="midThirdGraph" id="chart">
+              <ThirdChart />
             </div>
+            <div className="totalrev">Total Revenue</div>
+            <div className="numrev">${totalRev()}</div>
           </div>
         </div>
         {/* Calendar filter and order list */}
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "row",
-            justifyContent: "space-between",
-          }}
-        >
-          <div
-            style={{
-              width: "400px",
-              height: "425px",
-              paddingLeft: "15px",
-              position: "absolute",
-              paddingTop: "470px",
-            }}
-          >
+        <div className="bottomDiv">
+          <div className="calendarDiv">
             <div>
               <DateRange
                 editableDateInputs={true}
@@ -532,28 +257,16 @@ const DataPage = () => {
                 moveRangeOnFirstSelection={false}
                 ranges={stateDate}
               />
+              <button className="cancelbtn" onClick={handleCancel}>
+                Cancel
+              </button>
+              <button className="filterbtn" onClick={handleFilter}>
+                Filter
+              </button>
             </div>
           </div>
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              position: "absolute",
-              paddingTop: "470px",
-              paddingLeft: "450px",
-            }}
-          >
-            <div
-              style={{
-                fontWeight: "bold",
-                fontSize: "24px",
-                lineHeight: "132%",
-                fontFamily: "Montserrat",
-                color: "#333333",
-              }}
-            >
-              Orders
-            </div>
+          <div className="outerOrderDiv">
+            <div className="orderDiv">Orders</div>
             <div>{tableOrder()}</div>
           </div>
         </div>
